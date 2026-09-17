@@ -64,10 +64,7 @@ body::before {
     to { transform: rotate(360deg); }
 }
 
-.header-content {
-    position: relative;
-    z-index: 1;
-}
+.header-content { position: relative; z-index: 1; }
 
 .header h1 {
     color: white;
@@ -145,9 +142,7 @@ button:hover {
     box-shadow: 0 5px 15px rgba(236, 64, 122, 0.4);
 }
 
-button:active {
-    transform: translateY(0);
-}
+button:active { transform: translateY(0); }
 
 /* Stats Section */
 .stats-container {
@@ -168,30 +163,14 @@ button:active {
     transition: transform 0.3s ease;
 }
 
-.stat-card:hover {
-    transform: translateY(-5px);
-}
+.stat-card:hover { transform: translateY(-5px); }
 
-.stat-card i {
-    font-size: 2rem;
-    color: #ec407a;
-}
+.stat-card i { font-size: 2rem; color: #ec407a; }
 
-.stat-info {
-    display: flex;
-    flex-direction: column;
-}
+.stat-info { display: flex; flex-direction: column; }
 
-.stat-number {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #333;
-}
-
-.stat-label {
-    font-size: 0.9rem;
-    color: #666;
-}
+.stat-number { font-size: 1.8rem; font-weight: bold; color: #333; }
+.stat-label { font-size: 0.9rem; color: #666; }
 
 /* Filters */
 .filters {
@@ -218,9 +197,7 @@ button:active {
     border-color: transparent;
 }
 
-.filter-btn:hover:not(.active) {
-    background: #fce4ec;
-}
+.filter-btn:hover:not(.active) { background: #fce4ec; }
 
 /* Task List */
 .task-list {
@@ -243,14 +220,8 @@ button:active {
 }
 
 @keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateX(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
+    from { opacity: 0; transform: translateX(-20px); }
+    to   { opacity: 1; transform: translateX(0); }
 }
 
 .task-item:hover {
@@ -258,15 +229,8 @@ button:active {
     box-shadow: 0 8px 25px rgba(0,0,0,0.15);
 }
 
-.task-item.completed {
-    opacity: 0.7;
-    background: #f5f5f5;
-}
-
-.task-item.completed .task-text {
-    text-decoration: line-through;
-    color: #999;
-}
+.task-item.completed { opacity: 0.7; background: #f5f5f5; }
+.task-item.completed .task-text { text-decoration: line-through; color: #999; }
 
 .task-checkbox {
     width: 25px;
@@ -281,14 +245,9 @@ button:active {
     flex-shrink: 0;
 }
 
-.task-checkbox:hover {
-    background: #fce4ec;
-}
+.task-checkbox:hover { background: #fce4ec; }
 
-.task-checkbox.checked {
-    background: #ec407a;
-    border-color: #ec407a;
-}
+.task-checkbox.checked { background: #ec407a; border-color: #ec407a; }
 
 .task-checkbox.checked::after {
     content: '✓';
@@ -296,9 +255,7 @@ button:active {
     font-weight: bold;
 }
 
-.task-content {
-    flex: 1;
-}
+.task-content { flex: 1; }
 
 .task-text {
     font-size: 1.1rem;
@@ -312,6 +269,7 @@ button:active {
     gap: 15px;
     font-size: 0.85rem;
     color: #888;
+    align-items: center;
 }
 
 .priority-badge {
@@ -321,31 +279,13 @@ button:active {
     font-weight: 600;
 }
 
-.priority-high {
-    background: #fce4ec;
-    color: #c2185b;
-}
+.priority-high   { background: #fce4ec; color: #c2185b; }
+.priority-medium { background: #fff3e0; color: #e65100; }
+.priority-low    { background: #e8f5e9; color: #2e7d32; }
 
-.priority-medium {
-    background: #fff3e0;
-    color: #e65100;
-}
+.due-date { display: flex; align-items: center; gap: 5px; }
 
-.priority-low {
-    background: #e8f5e9;
-    color: #2e7d32;
-}
-
-.due-date {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.task-actions {
-    display: flex;
-    gap: 10px;
-}
+.task-actions { display: flex; gap: 10px; }
 
 .delete-btn {
     background: #fce4ec;
@@ -357,10 +297,7 @@ button:active {
     min-width: auto;
 }
 
-.delete-btn:hover {
-    background: #c2185b;
-    color: white;
-}
+.delete-btn:hover { background: #c2185b; color: white; }
 
 /* Empty State */
 .empty-state {
@@ -372,9 +309,7 @@ button:active {
     display: none;
 }
 
-.empty-state.show {
-    display: block;
-}
+.empty-state.show { display: block; }
 
 .empty-state i {
     font-size: 4rem;
@@ -382,14 +317,8 @@ button:active {
     margin-bottom: 20px;
 }
 
-.empty-state h3 {
-    color: #333;
-    margin-bottom: 10px;
-}
-
-.empty-state p {
-    color: #888;
-}
+.empty-state h3 { color: #333; margin-bottom: 10px; }
+.empty-state p  { color: #888; }
 
 /* Footer */
 .footer {
@@ -399,57 +328,153 @@ button:active {
     margin-top: 20px;
 }
 
-.footer p {
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+.footer p { text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+
+/* ============================================================
+   NEW SECTIONS: Money / Class / Calendar
+   ============================================================ */
+.new-card {
+    background: white;
+    border-radius: 25px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
 }
 
-/* Responsive Design */
+.new-card h2 {
+    font-size: 1.35rem;
+    color: #c2185b;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.input-group-2 {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+
+.input-group-2 input,
+.input-group-2 select {
+    flex: 1;
+    min-width: 120px;
+}
+
+.input-group-2 button {
+    padding: 12px 22px;
+    flex-shrink: 0;
+}
+
+/* Money summary boxes */
+.money-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.money-box {
+    padding: 14px;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.money-box .lbl {
+    font-size: 0.85rem;
+    display: block;
+    margin-bottom: 4px;
+    opacity: 0.85;
+}
+
+.money-box .val {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.money-box.income  { background: #d1fae5; color: #065f46; }
+.money-box.expense { background: #fee2e2; color: #991b1b; }
+.money-box.balance { background: #dbeafe; color: #1e40af; }
+
+/* Money + Class lists */
+#moneyList,
+#classList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#moneyList li,
+#classList li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    background: #fce4ec;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: #333;
+}
+
+#moneyList li.income span:last-child  { color: #059669; font-weight: 700; }
+#moneyList li.expense span:last-child { color: #dc2626; font-weight: 700; }
+
+/* Primary action button (Calendar sync + Connect) */
+.primary-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #ec407a 0%, #c2185b 100%);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+}
+
+.primary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(236, 64, 122, 0.4);
+}
+
+.hint {
+    font-size: 0.85rem;
+    color: #888;
+    margin-top: 8px;
+    font-style: italic;
+}
+
+.status {
+    margin-top: 10px;
+    font-weight: 600;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.status.connected { color: #059669; }
+.status.error     { color: #dc2626; }
+
+/* Responsive */
 @media (max-width: 768px) {
-    .input-group {
-        grid-template-columns: 1fr;
-    }
-    
-    .stats-container {
-        grid-template-columns: 1fr;
-    }
-    
-    .header h1 {
-        font-size: 2rem;
-    }
-    
-    .filters {
-        justify-content: center;
-    }
-    
-    .filter-btn {
-        font-size: 0.9rem;
-        padding: 8px 15px;
-    }
-    
-    .task-item {
-        flex-wrap: wrap;
-    }
-    
-    .task-actions {
-        width: 100%;
-        justify-content: flex-end;
-    }
+    .input-group { grid-template-columns: 1fr; }
+    .stats-container { grid-template-columns: 1fr; }
+    .header h1 { font-size: 2rem; }
+    .filters { justify-content: center; }
+    .filter-btn { font-size: 0.9rem; padding: 8px 15px; }
+    .task-item { flex-wrap: wrap; }
+    .task-actions { width: 100%; justify-content: flex-end; }
+    .money-summary { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 480px) {
-    .container {
-        padding: 10px;
-    }
-    
-    .header {
-        padding: 25px 20px;
-    }
-    
-    .header h1 {
-        font-size: 1.8rem;
-    }
-    
-    .quick-add {
-        padding: 20px;
-    }
+    .container { padding: 10px; }
+    .header { padding: 25px 20px; }
+    .header h1 { font-size: 1.8rem; }
+    .quick-add { padding: 20px; }
+    .new-card  { padding: 18px; }
 }
