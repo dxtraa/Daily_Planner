@@ -19,14 +19,13 @@ initDate();
 
 
 // ============================================================
-// ✅ TASK MANAGER (priority + due date + filters + stats)
+// ✅ TASK MANAGER
 // ============================================================
 class TaskManager {
     constructor() {
         this.tasks = JSON.parse(localStorage.getItem('tasks')) || [];
         this.currentFilter = 'all';
 
-        // Elements
         this.inputEl     = document.getElementById('taskInput');
         this.priorityEl  = document.getElementById('prioritySelect');
         this.dueDateEl   = document.getElementById('dueDate');
@@ -34,15 +33,12 @@ class TaskManager {
         this.listEl      = document.getElementById('taskList');
         this.emptyEl     = document.getElementById('emptyState');
 
-        // Stats
         this.completedEl = document.getElementById('completedCount');
         this.pendingEl   = document.getElementById('pendingCount');
         this.scoreEl     = document.getElementById('productivityScore');
 
-        // Filters
         this.filterBtns = document.querySelectorAll('.filter-btn');
 
-        // Events
         this.addBtn.addEventListener('click', () => this.addTask());
         this.inputEl.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.addTask();
@@ -60,7 +56,6 @@ class TaskManager {
         this.render();
     }
 
-    // ---------- Add ----------
     addTask() {
         const text = this.inputEl.value.trim();
         if (!text) return;
@@ -74,15 +69,14 @@ class TaskManager {
             createdAt: new Date().toISOString(),
         });
 
-        this.inputEl.value = '';
-        this.dueDateEl.value = '';
+        this.inputEl.value    = '';
+        this.dueDateEl.value  = '';
         this.priorityEl.value = 'medium';
 
         this.save();
         this.render();
     }
 
-    // ---------- Toggle ----------
     toggle(id) {
         const task = this.tasks.find((t) => t.id === id);
         if (task) task.done = !task.done;
@@ -90,7 +84,6 @@ class TaskManager {
         this.render();
     }
 
-    // ---------- Delete ----------
     remove(id) {
         if (!confirm('Are you sure you want to delete this task?')) return;
         this.tasks = this.tasks.filter((t) => t.id !== id);
@@ -98,12 +91,10 @@ class TaskManager {
         this.render();
     }
 
-    // ---------- Save ----------
     save() {
         localStorage.setItem('tasks', JSON.stringify(this.tasks));
     }
 
-    // ---------- Get filtered tasks ----------
     getFiltered() {
         switch (this.currentFilter) {
             case 'active':    return this.tasks.filter((t) => !t.done);
@@ -113,62 +104,56 @@ class TaskManager {
         }
     }
 
-    // ---------- Update stats ----------
     updateStats() {
-        const total = this.tasks.length;
+        const total     = this.tasks.length;
         const completed = this.tasks.filter((t) => t.done).length;
-        const pending = total - completed;
-        const score = total === 0 ? 0 : Math.round((completed / total) * 100);
+        const pending   = total - completed;
+        const score     = total === 0 ? 0 : Math.round((completed / total) * 100);
 
         this.completedEl.textContent = completed;
-        this.pendingEl.textContent = pending;
-        this.scoreEl.textContent = score + '%';
+        this.pendingEl.textContent   = pending;
+        this.scoreEl.textContent     = score + '%';
     }
 
-    // ---------- Render ----------
     render() {
         const filtered = this.getFiltered();
         this.listEl.innerHTML = '';
 
-        // Empty state
+        // Toggle empty state using `.show` class (matches your CSS)
         if (filtered.length === 0) {
-            this.emptyEl.style.display = 'block';
+            this.emptyEl.classList.add('show');
         } else {
-            this.emptyEl.style.display = 'none';
+            this.emptyEl.classList.remove('show');
         }
 
         filtered.forEach((task) => {
             const item = document.createElement('div');
             item.className = 'task-item' + (task.done ? ' completed' : '');
-            item.dataset.priority = task.priority;
 
-            // Checkbox
-            const check = document.createElement('input');
-            check.type = 'checkbox';
-            check.checked = task.done;
-            check.addEventListener('change', () => this.toggle(task.id));
+            // --- Custom checkbox (div, not input) ---
+            const checkbox = document.createElement('div');
+            checkbox.className = 'task-checkbox' + (task.done ? ' checked' : '');
+            checkbox.addEventListener('click', () => this.toggle(task.id));
 
-            // Content wrapper
+            // --- Content ---
             const content = document.createElement('div');
             content.className = 'task-content';
 
-            // Text
-            const text = document.createElement('span');
+            const text = document.createElement('div');
             text.className = 'task-text';
             text.textContent = task.text;
             content.appendChild(text);
 
-            // Meta (priority + due date)
             const meta = document.createElement('div');
             meta.className = 'task-meta';
 
-            const priorityTag = document.createElement('span');
-            priorityTag.className = 'priority-tag priority-' + task.priority;
-            priorityTag.textContent =
-                task.priority === 'high' ? '❤️ High'
-                : task.priority === 'low' ? '💚 Low'
-                : '💛 Medium';
-            meta.appendChild(priorityTag);
+            const badge = document.createElement('span');
+            badge.className = 'priority-badge priority-' + task.priority;
+            badge.textContent =
+                task.priority === 'high'   ? '❤️ High'
+              : task.priority === 'low'    ? '💚 Low'
+              : '💛 Medium';
+            meta.appendChild(badge);
 
             if (task.dueDate) {
                 const due = document.createElement('span');
@@ -182,15 +167,19 @@ class TaskManager {
 
             content.appendChild(meta);
 
-            // Delete button
+            // --- Actions ---
+            const actions = document.createElement('div');
+            actions.className = 'task-actions';
+
             const del = document.createElement('button');
             del.className = 'delete-btn';
             del.innerHTML = '<i class="fas fa-trash"></i>';
             del.addEventListener('click', () => this.remove(task.id));
+            actions.appendChild(del);
 
-            item.appendChild(check);
+            item.appendChild(checkbox);
             item.appendChild(content);
-            item.appendChild(del);
+            item.appendChild(actions);
             this.listEl.appendChild(item);
         });
 
@@ -205,7 +194,7 @@ new TaskManager();
 // ============================================================
 class MoneyManager {
     constructor() {
-        this.transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+        this.tx = JSON.parse(localStorage.getItem('transactions')) || [];
 
         this.descEl   = document.getElementById('moneyDesc');
         this.amountEl = document.getElementById('moneyAmount');
@@ -217,7 +206,7 @@ class MoneyManager {
         this.expenseEl = document.getElementById('totalExpense');
         this.balanceEl = document.getElementById('balance');
 
-        if (!this.addBtn) return; // Section not on page
+        if (!this.addBtn) return;
 
         this.addBtn.addEventListener('click', () => this.add());
         this.amountEl.addEventListener('keypress', (e) => {
@@ -237,7 +226,7 @@ class MoneyManager {
             return;
         }
 
-        this.transactions.unshift({
+        this.tx.unshift({
             id: Date.now(),
             desc,
             amount,
@@ -245,48 +234,30 @@ class MoneyManager {
             date: new Date().toISOString(),
         });
 
-        this.descEl.value = '';
+        this.descEl.value   = '';
         this.amountEl.value = '';
 
         this.save();
         this.render();
     }
 
-    remove(id) {
-        this.transactions = this.transactions.filter((t) => t.id !== id);
-        this.save();
-        this.render();
-    }
-
     save() {
-        localStorage.setItem('transactions', JSON.stringify(this.transactions));
+        localStorage.setItem('transactions', JSON.stringify(this.tx));
     }
 
     render() {
-        const income = this.transactions
-            .filter((t) => t.type === 'income')
-            .reduce((s, t) => s + t.amount, 0);
+        const inc = this.tx.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+        const exp = this.tx.filter((t) => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
 
-        const expense = this.transactions
-            .filter((t) => t.type === 'expense')
-            .reduce((s, t) => s + t.amount, 0);
+        this.incomeEl.textContent  = '$' + inc.toFixed(2);
+        this.expenseEl.textContent = '$' + exp.toFixed(2);
+        this.balanceEl.textContent = '$' + (inc - exp).toFixed(2);
 
-        const balance = income - expense;
-
-        this.incomeEl.textContent  = '$' + income.toFixed(2);
-        this.expenseEl.textContent = '$' + expense.toFixed(2);
-        this.balanceEl.textContent = '$' + balance.toFixed(2);
-
-        // List
-        this.listEl.innerHTML = this.transactions
-            .map(
-                (t) => `
-                <li class="${t.type}">
-                    <span>${t.desc}</span>
-                    <span>${t.type === 'income' ? '+' : '-'}$${t.amount.toFixed(2)}</span>
-                </li>`
-            )
-            .join('');
+        this.listEl.innerHTML = this.tx.map((t) => `
+            <li class="${t.type}">
+                <span>${t.desc}</span>
+                <span>${t.type === 'income' ? '+' : '-'}$${t.amount.toFixed(2)}</span>
+            </li>`).join('');
     }
 }
 new MoneyManager();
@@ -310,7 +281,6 @@ class ClassManager {
         if (!this.addBtn) return;
 
         this.addBtn.addEventListener('click', () => this.add());
-
         this.render();
     }
 
@@ -325,20 +295,12 @@ class ClassManager {
             alert('Please fill in class name, start time, and end time.');
             return;
         }
-
         if (start >= end) {
             alert('End time must be after start time.');
             return;
         }
 
-        this.classes.push({
-            id: Date.now(),
-            name,
-            location,
-            day,
-            start,
-            end,
-        });
+        this.classes.push({ id: Date.now(), name, location, day, start, end });
 
         this.nameEl.value     = '';
         this.locationEl.value = '';
@@ -362,13 +324,8 @@ class ClassManager {
 
     render() {
         const dayNames = {
-            MO: 'Monday',
-            TU: 'Tuesday',
-            WE: 'Wednesday',
-            TH: 'Thursday',
-            FR: 'Friday',
-            SA: 'Saturday',
-            SU: 'Sunday',
+            MO: 'Monday', TU: 'Tuesday', WE: 'Wednesday',
+            TH: 'Thursday', FR: 'Friday', SA: 'Saturday', SU: 'Sunday',
         };
 
         if (this.classes.length === 0) {
@@ -377,24 +334,18 @@ class ClassManager {
             return;
         }
 
-        this.listEl.innerHTML = this.classes
-            .map(
-                (c) => `
-                <li>
-                    <span>
-                        <strong>${c.name}</strong><br>
-                        <small>${dayNames[c.day]} · ${c.start} – ${c.end}${c.location ? ' · ' + c.location : ''}</small>
-                    </span>
-                    <button class="delete-btn" onclick="window._removeClass(${c.id})" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:4px 8px;cursor:pointer;">✕</button>
-                </li>`
-            )
-            .join('');
+        this.listEl.innerHTML = this.classes.map((c) => `
+            <li>
+                <span>
+                    <strong>${c.name}</strong><br>
+                    <small>${dayNames[c.day]} · ${c.start} – ${c.end}${c.location ? ' · ' + c.location : ''}</small>
+                </span>
+                <button class="delete-btn" onclick="window._removeClass(${c.id})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </li>`).join('');
     }
 }
 
 const classManagerInstance = new ClassManager();
-
-// Global handler for the inline delete button
-window._removeClass = function (id) {
-    classManagerInstance.remove(id);
-};
+window._removeClass = function (id) { classManagerInstance.remove(id); };
