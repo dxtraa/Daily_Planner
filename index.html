@@ -1,11 +1,110 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🌸 Dera's Planner - My Daily Organizer</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google API for Calendar -->
+    <script src="https://apis.google.com/js/api.js" async defer></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+    <!-- Styles ONLY for the new sections (Money / Class / Calendar) -->
+    <style>
+        .new-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+        .new-card h2 {
+            font-size: 1.3rem;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .input-group-2 {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .input-group-2 input,
+        .input-group-2 select {
+            flex: 1;
+            min-width: 120px;
+            padding: 10px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+        }
+        .input-group-2 button {
+            padding: 10px 16px;
+            background: #ec4899;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .input-group-2 button:hover { background: #db2777; }
+
+        .money-summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .money-box {
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .money-box .lbl { font-size: 0.8rem; opacity: 0.8; display: block; }
+        .money-box .val { font-size: 1.1rem; font-weight: 700; }
+        .money-box.income  { background: #d1fae5; color: #065f46; }
+        .money-box.expense { background: #fee2e2; color: #991b1b; }
+        .money-box.balance { background: #dbeafe; color: #1e40af; }
+
+        #moneyList, #classList { list-style: none; padding: 0; margin: 0; }
+        #moneyList li, #classList li {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+        }
+        #moneyList li.income span:last-child  { color: #059669; font-weight: 600; }
+        #moneyList li.expense span:last-child { color: #dc2626; font-weight: 600; }
+
+        .primary-btn {
+            width: 100%;
+            padding: 12px;
+            background: #059669;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .primary-btn:hover { background: #047857; }
+
+        .hint { font-size: 0.85rem; color: #94a3b8; margin-top: 6px; }
+        .status { margin-top: 10px; font-weight: 600; text-align: center; font-size: 0.9rem; }
+        .status.connected { color: #059669; }
+        .status.error     { color: #dc2626; }
+
+        @media (max-width: 500px) {
+            .money-summary { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -23,7 +122,7 @@
             <!-- Quick Add Section -->
             <section class="quick-add">
                 <div class="input-group">
-                    <input type="text" id="taskInput" placeholder="✨ Tambahkan tugas baru..." />
+                    <input type="text" id="taskInput" placeholder="✨ Add a new task..." />
                     <select id="prioritySelect">
                         <option value="low">💚 Low</option>
                         <option value="medium" selected>💛 Medium</option>
@@ -77,9 +176,89 @@
             <!-- Empty State -->
             <div class="empty-state" id="emptyState">
                 <i class="fas fa-sparkles"></i>
-                <h3>Belum ada tugas!</h3>
-                <p>Tambahkan tugas pertama Anda dan mulai produktif hari ini 💪</p>
+                <h3>No tasks yet!</h3>
+                <p>Add your first task and start being productive today 💪</p>
             </div>
+
+            <!-- ============================================
+                 NEW: MONEY MANAGER
+            ============================================= -->
+            <section class="new-card">
+                <h2>💰 Money Manager</h2>
+
+                <div class="money-summary">
+                    <div class="money-box income">
+                        <span class="lbl">Income</span>
+                        <span class="val" id="totalIncome">$0.00</span>
+                    </div>
+                    <div class="money-box expense">
+                        <span class="lbl">Expenses</span>
+                        <span class="val" id="totalExpense">$0.00</span>
+                    </div>
+                    <div class="money-box balance">
+                        <span class="lbl">Balance</span>
+                        <span class="val" id="balance">$0.00</span>
+                    </div>
+                </div>
+
+                <div class="input-group-2">
+                    <input type="text" id="moneyDesc" placeholder="Description" />
+                    <input type="number" id="moneyAmount" placeholder="Amount" step="0.01" />
+                    <select id="moneyType">
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                    </select>
+                    <button id="addMoneyBtn">Add</button>
+                </div>
+
+                <ul id="moneyList"></ul>
+            </section>
+
+            <!-- ============================================
+                 NEW: CLASS SCHEDULE
+            ============================================= -->
+            <section class="new-card">
+                <h2>🎓 Class Schedule</h2>
+
+                <div class="input-group-2">
+                    <input type="text" id="className" placeholder="Class name (e.g. Data Structures)" />
+                    <input type="text" id="classLocation" placeholder="Room / Location" />
+                </div>
+
+                <div class="input-group-2">
+                    <select id="classDay">
+                        <option value="MO">Monday</option>
+                        <option value="TU">Tuesday</option>
+                        <option value="WE">Wednesday</option>
+                        <option value="TH">Thursday</option>
+                        <option value="FR">Friday</option>
+                        <option value="SA">Saturday</option>
+                        <option value="SU">Sunday</option>
+                    </select>
+                    <input type="time" id="classStart" />
+                    <input type="time" id="classEnd" />
+                    <button id="addClassBtn">Add Class</button>
+                </div>
+
+                <ul id="classList"></ul>
+
+                <button id="syncClassesBtn" class="primary-btn">
+                    📆 Sync All Classes to Google Calendar
+                </button>
+                <p class="hint">You must be connected to Google Calendar first.</p>
+            </section>
+
+            <!-- ============================================
+                 NEW: GOOGLE CALENDAR
+            ============================================= -->
+            <section class="new-card">
+                <h2>📆 Google Calendar</h2>
+                <p class="hint">
+                    Connect your Google account to sync your classes into your calendar.
+                </p>
+                <button id="authBtn" class="primary-btn">Connect Google Calendar</button>
+                <p id="authStatus" class="status"></p>
+            </section>
         </main>
 
         <!-- Footer -->
@@ -89,5 +268,6 @@
     </div>
 
     <script src="script.js"></script>
+    <script src="calendar.js"></script>
 </body>
 </html>
