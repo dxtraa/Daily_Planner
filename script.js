@@ -349,3 +349,114 @@ class ClassManager {
 
 const classManagerInstance = new ClassManager();
 window._removeClass = function (id) { classManagerInstance.remove(id); };
+
+
+// ============================================================
+// 📆 EXPORT CLASSES TO .ics (Google Calendar import)
+// No API needed — just generates a downloadable file
+// ============================================================
+const downloadBtn = document.getElementById('downloadIcsBtn');
+
+if (downloadBtn) {
+    downloadBtn.addEventListener('click', downloadClassesAsIcs);
+}
+
+function downloadClassesAsIcs() {
+    const statusEl = document.getElementById('icsStatus');
+    const classes  = JSON.parse(localStorage.getItem('classes')) || [];
+
+    if (classes.length === 0) {
+        statusEl.textContent = '⚠️ No classes added yet. Add a class first.';
+        statusEl.className = 'status error';
+        return;
+    }
+
+    // Find the next date matching a given weekday
+    const dayMap = { SU: 0, MO: 1, TU: 2, WE: 3, TH: 4, FR: 5, SA: 6 };
+    function nextDateFor(dayCode) {
+        const today = new Date();
+        const diff  = (dayMap[dayCode] - today.getDay() + 7) % 7;
+        const d     = new Date(today);
+        d.setDate(today.getDate() + diff);
+        return d;
+    }
+
+    // Format a Date as YYYYMMDDTHHMMSS (local time, no Z)
+    function fmt(dt) {
+        const p = (n) => String(n).padStart(2, '0');
+        return (
+            dt.getFullYear() +
+            p(dt.getMonth() + 1) +
+            p(dt.getDate()) + 'T' +
+            p(dt.getHours()) +
+            p(dt.getMinutes()) +
+            p(dt.getSeconds())
+        );
+    }
+
+    // 1 year from now — recurring events end date
+    const until = new Date();
+    until.setFullYear(until.getFullYear() + 1);
+    const untilStr = fmt(until) ;
+
+    const lines = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Deras Planner//EN',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH',
+    ];
+
+    classes.forEach((c) => {
+        const base = nextDateFor(c.day);
+        const [sh, sm] = c.start.split(':');
+        const [eh, em] = c.end.split(':');
+
+        const start = new Date(base);
+        start.setHours(+sh, +sm, 0, 0);
+
+        const end = new Date(base);
+        end.setHours(+eh, +em, 0, 0);
+
+        lines.push(
+            'BEGIN:VEVENT',
+            'UID:class-' + c.id + '@deras-planner',
+            'DTSTAMP:' + fmt(new Date()) + 'Z',
+            'DTSTART:' + fmt(start),
+            'DTEND:'   + fmt(end),
+            'RRULE:FREQ=WEEKLY;UNTIL=' + untilStr + 'Z;BYDAY=' + c.day,
+            'SUMMARY:' + escapeIcs(c.name),
+            c.location ? 'LOCATION:' + escapeIcs(c.location) : '',
+            'DESCRIPTION:Campus class added from Dera\'s Planner',
+            'END:VEVENT'
+        );
+    });
+
+    lines.push('END:VCALENDAR');
+
+    // Remove empty lines
+    const icsContent = lines.filter((l) => l !== '').join('\r\n');
+
+    // Trigger download
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = 'classes.ics';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    statusEl.textContent = '✅ File classes.ics downloaded! Now import it into Google Calendar.';
+    statusEl.className = 'status connected';
+}
+
+// Escape special characters for .ics format
+function escapeIcs(str) {
+    return String(str)
+        .replace(/\\/g, '\\\\')
+        .replace(/,/g,  '\\,')
+        .replace(/;/g,  '\\;')
+        .replace(/\n/g, '\\n');
+}
