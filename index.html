@@ -242,24 +242,37 @@
 
                 <ul id="classList"></ul>
 
-                <button id="syncClassesBtn" class="primary-btn">
-                    📆 Sync All Classes to Google Calendar
-                </button>
-                <p class="hint">You must be connected to Google Calendar first.</p>
-            </section>
+    <!-- ============================================
+     NEW: EXPORT TO GOOGLE CALENDAR (.ics)
+============================================= -->
+<section class="new-card">
+    <h2>📆 Export to Google Calendar</h2>
+    <p class="hint">
+        Download a <strong>.ics</strong> file, then import it into Google Calendar.
+        No login, no API key needed.
+    </p>
 
-            <!-- ============================================
-                 NEW: GOOGLE CALENDAR
-            ============================================= -->
-            <section class="new-card">
-                <h2>📆 Google Calendar</h2>
-                <p class="hint">
-                    Connect your Google account to sync your classes into your calendar.
-                </p>
-                <button id="authBtn" class="primary-btn">Connect Google Calendar</button>
-                <p id="authStatus" class="status"></p>
-            </section>
-        </main>
+    <button id="downloadIcsBtn" class="primary-btn">
+        ⬇️ Download Classes as .ics
+    </button>
+
+    <details style="margin-top:14px; background:#fce4ec; padding:12px; border-radius:12px;">
+        <summary style="cursor:pointer; font-weight:600; color:#c2185b;">
+            📖 How to import into Google Calendar
+        </summary>
+        <ol style="margin-top:10px; padding-left:20px; font-size:0.9rem; line-height:1.6; color:#333;">
+            <li>Click the button above → file <code>classes.ics</code> akan ter-download</li>
+            <li>Buka <a href="https://calendar.google.com" target="_blank">calendar.google.com</a></li>
+            <li>Klik ⚙️ <strong>Settings</strong> (kanan atas)</li>
+            <li>Pilih tab <strong>Import &amp; Export</strong></li>
+            <li>Klik <strong>Select file from your computer</strong> → pilih file tadi</li>
+            <li>Pilih calendar tujuan → klik <strong>Import</strong></li>
+            <li>Selesai! Kelas kamu muncul sebagai event mingguan 🎉</li>
+        </ol>
+    </details>
+
+    <p id="icsStatus" class="status"></p>
+</section>
 
         <!-- Footer -->
         <footer class="footer">
@@ -268,6 +281,5 @@
     </div>
 
     <script src="script.js"></script>
-    <script src="calendar.js"></script>
 </body>
 </html>
